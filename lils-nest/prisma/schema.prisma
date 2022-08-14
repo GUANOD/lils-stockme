@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model SCHEDULE {
+  schedule_id    Int      @id @default(autoincrement())
+  schedule_start DateTime @db.DateTime(0)
+  schedule_end   DateTime @db.DateTime(0)
+  user_id        Int?
+  USER           USER?    @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "schedule_user_FK")
+
+  @@index([user_id], map: "schedule_user_FK")
+}
+
+model USER {
+  user_id            Int        @id
+  user_name          String     @db.VarChar(50)
+  user_username      String     @db.VarChar(50) @unique
+  user_email         String     @db.VarChar(50) @unique
+  user_password      String     @db.VarChar(200)
+  user_startContract DateTime   @db.Date
+  user_endContract   DateTime?  @db.Date
+  company_id         Int?
+  company            company?   @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "user_company_FK")
+  SCHEDULE           SCHEDULE[]
+  posseder           posseder[]
+
+  @@index([company_id], map: "user_company_FK")
+}
+
+model cart {
+  cart_id        Int       @id @default(autoincrement())
+  cart_price     Decimal   @db.Decimal(15, 3)
+  cart_fullfiled Boolean
+  cart_invoice   String?   @db.VarChar(100)
+  cart_delivered Boolean
+  company_id     Int?
+  company        company?  @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "cart_company_FK")
+  joindre        joindre[]
+
+  @@index([company_id], map: "cart_company_FK")
+}
+
+model company {
+  company_id        Int           @id @default(autoincrement())
+  company_name      String        @db.VarChar(50) @unique
+  company_reference String        @db.VarChar(50) @unique
+  company_address   String        @db.VarChar(50)
+  type_id           Int?
+  company_type      company_type? @relation(fields: [type_id], references: [type_id], onDelete: Restrict, onUpdate: Restrict, map: "company_company_type_FK")
+  USER              USER[]
+  cart              cart[]
+  product           product[]
+
+  @@index([type_id], map: "company_company_type_FK")
+}
+
+model company_type {
+  type_id   Int       @id @default(autoincrement())
+  type_name String    @db.VarChar(50)
+  company   company[]
+}
+
+model joindre {
+  product_id Int
+  cart_id    Int
+  prod_count Int 
+  cart       cart    @relation(fields: [cart_id], references: [cart_id], onUpdate: Restrict, map: "joindre_cart0_FK")
+  product    product @relation(fields: [product_id], references: [product_id], onUpdate: Restrict, map: "joindre_product_FK")
+
+  @@id([product_id, cart_id])
+  @@index([cart_id], map: "joindre_cart0_FK")
+}
+
+
+model posseder {
+  user_id Int
+  role_id Int
+  role    role @relation(fields: [role_id], references: [role_id], onUpdate: Restrict, map: "posseder_role0_FK")
+  USER    USER @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "posseder_user_FK")
+
+  @@id([user_id, role_id])
+  @@index([role_id], map: "posseder_role0_FK")
+}
+
+model product {
+  product_id        Int               @id @default(autoincrement())
+  product_reference String            @db.VarChar(50) @unique
+  product_name      String            @db.VarChar(50)
+  product_brand     String            @db.VarChar(50)
+  product_price     Decimal           @db.Decimal(15, 3)
+  category_id       Int?
+  company_id        Int?
+  company           company?          @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "product_company0_FK")
+  product_category  product_category? @relation(fields: [category_id], references: [category_id], onDelete: Restrict, onUpdate: Restrict, map: "product_product_category_FK")
+  joindre           joindre[]
+
+  @@index([company_id], map: "product_company0_FK")
+  @@index([category_id], map: "product_product_category_FK")
+}
+
+model product_category {
+  category_id   Int       @id @default(autoincrement())
+  category_name String    @db.VarChar(50)
+  product       product[]
+}
+
+model role {
+  role_id      Int        @id @default(autoincrement())
+  role_name    String     @db.VarChar(50)
+  role_hours   Int
+  role_isAdmin Boolean
+  posseder     posseder[]
+}
