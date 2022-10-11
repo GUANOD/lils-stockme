@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AppService {
   getHello(): object {
     return {
-      Q:"am i json??",
-      A:"or are we dancer?"
+      Q: "are we json??",
+      A: "or are we dancer?",
     };
   }
 }

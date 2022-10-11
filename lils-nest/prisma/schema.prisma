@@ -7,113 +7,156 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model SCHEDULE {
-  schedule_id    Int      @id @default(autoincrement())
-  schedule_start DateTime @db.DateTime(0)
-  schedule_end   DateTime @db.DateTime(0)
-  user_id        Int?
-  USER           USER?    @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "schedule_user_FK")
-
-  @@index([user_id], map: "schedule_user_FK")
-}
-
-model USER {
-  user_id            Int        @id
-  user_name          String     @db.VarChar(50)
-  user_username      String     @db.VarChar(50) @unique
-  user_email         String     @db.VarChar(50) @unique
-  user_password      String     @db.VarChar(200)
-  user_startContract DateTime   @db.Date
-  user_endContract   DateTime?  @db.Date
-  company_id         Int?
-  company            company?   @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "user_company_FK")
-  SCHEDULE           SCHEDULE[]
-  posseder           posseder[]
-
-  @@index([company_id], map: "user_company_FK")
-}
-
 model cart {
-  cart_id        Int       @id @default(autoincrement())
-  cart_price     Decimal   @db.Decimal(15, 3)
-  cart_fullfiled Boolean
-  cart_invoice   String?   @db.VarChar(100)
-  cart_delivered Boolean
-  company_id     Int?
-  company        company?  @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "cart_company_FK")
-  joindre        joindre[]
+  cart_id                         Int        @id @default(autoincrement())
+  cart_price                      Decimal    @db.Decimal(19, 4)
+  cart_fullfilled                 Boolean
+  cart_delivered                  Boolean
+  buyer_id                        Int?
+  seller_id                       Int?
+  company_cart_buyer_idTocompany  company?   @relation("cart_buyer_idTocompany", fields: [buyer_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "cart_ibfk_1")
+  company_cart_seller_idTocompany company?   @relation("cart_seller_idTocompany", fields: [seller_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "cart_ibfk_2")
+  to_place                        to_place[]
 
-  @@index([company_id], map: "cart_company_FK")
+  @@index([buyer_id], map: "buyer_id")
+  @@index([seller_id], map: "seller_id")
 }
 
 model company {
-  company_id        Int           @id @default(autoincrement())
-  company_name      String        @db.VarChar(50) @unique
-  company_reference String        @db.VarChar(50) @unique
-  company_address   String        @db.VarChar(50)
-  type_id           Int?
-  company_type      company_type? @relation(fields: [type_id], references: [type_id], onDelete: Restrict, onUpdate: Restrict, map: "company_company_type_FK")
-  USER              USER[]
-  cart              cart[]
-  product           product[]
+  company_id                           Int          @id @default(autoincrement())
+  company_name                         String       @db.VarChar(50)
+  company_reference                    String       @db.VarChar(100)
+  company_address                      String       @db.VarChar(100)
+  company_type_id                      Int
+  company_type                         company_type @relation(fields: [company_type_id], references: [company_type_id], onUpdate: Restrict, map: "company_ibfk_1")
+  user                                 user[]       @relation("userTocompany")
+  cart_cart_buyer_idTocompany          cart[]       @relation("cart_buyer_idTocompany")
+  cart_cart_seller_idTocompany         cart[]       @relation("cart_seller_idTocompany")
+  message_companyTomessage_receiver_id message[]    @relation("companyTomessage_receiver_id")
+  message_companyTomessage_sender_id   message[]    @relation("companyTomessage_sender_id")
+  to_list_companyToto_list_favorite_id to_list[]    @relation("companyToto_list_favorite_id")
+  to_list_companyToto_list_owner_id    to_list[]    @relation("companyToto_list_owner_id")
+  to_stock                             to_stock[]
 
-  @@index([type_id], map: "company_company_type_FK")
+  @@index([company_type_id], map: "company_type_id")
 }
 
 model company_type {
-  type_id   Int       @id @default(autoincrement())
-  type_name String    @db.VarChar(50)
-  company   company[]
-}
-
-model joindre {
-  product_id Int
-  cart_id    Int
-  prod_count Int 
-  cart       cart    @relation(fields: [cart_id], references: [cart_id], onUpdate: Restrict, map: "joindre_cart0_FK")
-  product    product @relation(fields: [product_id], references: [product_id], onUpdate: Restrict, map: "joindre_product_FK")
-
-  @@id([product_id, cart_id])
-  @@index([cart_id], map: "joindre_cart0_FK")
-}
-
-
-model posseder {
-  user_id Int
-  role_id Int
-  role    role @relation(fields: [role_id], references: [role_id], onUpdate: Restrict, map: "posseder_role0_FK")
-  USER    USER @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "posseder_user_FK")
-
-  @@id([user_id, role_id])
-  @@index([role_id], map: "posseder_role0_FK")
+  company_type_id   Int       @id @default(autoincrement())
+  company_type_name String    @db.VarChar(50)
+  company           company[]
 }
 
 model product {
-  product_id        Int               @id @default(autoincrement())
-  product_reference String            @db.VarChar(50) @unique
-  product_name      String            @db.VarChar(50)
-  product_brand     String            @db.VarChar(50)
-  product_price     Decimal           @db.Decimal(15, 3)
-  category_id       Int?
-  company_id        Int?
-  company           company?          @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "product_company0_FK")
-  product_category  product_category? @relation(fields: [category_id], references: [category_id], onDelete: Restrict, onUpdate: Restrict, map: "product_product_category_FK")
-  joindre           joindre[]
+  product_id          Int               @id @default(autoincrement())
+  product_name        String            @db.VarChar(50)
+  product_reference   String            @unique(map: "product_reference") @db.VarChar(200)
+  product_price       Decimal           @db.Decimal(19, 4)
+  product_imagePath   String?           @db.VarChar(50)
+  product_category_id Int?
+  product_category    product_category? @relation(fields: [product_category_id], references: [product_category_id], onDelete: Restrict, onUpdate: Restrict, map: "product_ibfk_1")
+  to_place            to_place[]
+  to_stock            to_stock[]
 
-  @@index([company_id], map: "product_company0_FK")
-  @@index([category_id], map: "product_product_category_FK")
+  @@index([product_category_id], map: "product_category_id")
 }
 
 model product_category {
-  category_id   Int       @id @default(autoincrement())
-  category_name String    @db.VarChar(50)
-  product       product[]
+  product_category_id   Int       @id @default(autoincrement())
+  product_category_name String    @db.VarChar(50)
+  product               product[]
 }
 
 model role {
-  role_id      Int        @id @default(autoincrement())
-  role_name    String     @db.VarChar(50)
-  role_hours   Int
-  role_isAdmin Boolean
-  posseder     posseder[]
+  role_id    Int      @id @default(autoincrement())
+  role_name  String   @db.VarChar(50)
+  role_hours Decimal? @db.Decimal(3, 2)
+  user       user[]   @relation("userTorole")
+}
+
+model user {
+  user_id            Int        @id @default(autoincrement())
+  user_name          String     @db.VarChar(50)
+  user_username      String     @unique(map: "user_username") @db.VarChar(50)
+  user_email         String     @unique(map: "user_email") @db.VarChar(100)
+  user_password      String     @db.VarChar(200)
+  user_startContract DateTime   @db.Date
+  user_endContract   DateTime?  @db.Date
+  role_id            Int
+  company_id         Int
+  role               role       @relation("userTorole", fields: [role_id], references: [role_id], onUpdate: Restrict, map: "_user_ibfk_1")
+  company            company    @relation("userTocompany", fields: [company_id], references: [company_id], onUpdate: Restrict, map: "_user_ibfk_2")
+  schedule           schedule[] @relation("userToschedule")
+
+  @@index([company_id], map: "company_id")
+  @@index([role_id], map: "role_id")
+  @@map("_user")
+}
+
+model message {
+  message_id                           Int      @id @default(autoincrement())
+  message_date                         DateTime @db.DateTime(0)
+  message_content                      String   @db.VarChar(160)
+  receiver_id                          Int?
+  sender_id                            Int?
+  ticket_id                            Int
+  company_companyTomessage_receiver_id company? @relation("companyTomessage_receiver_id", fields: [receiver_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "message_ibfk_1")
+  company_companyTomessage_sender_id   company? @relation("companyTomessage_sender_id", fields: [sender_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "message_ibfk_2")
+  ticket                               ticket   @relation(fields: [ticket_id], references: [ticket_id], onUpdate: Restrict, map: "message_ibfk_3")
+
+  @@index([receiver_id], map: "receiver_id")
+  @@index([sender_id], map: "sender_id")
+  @@index([ticket_id], map: "ticket_id")
+}
+
+model schedule {
+  schedule_id   Int      @id @default(autoincrement())
+  scheule_start DateTime @db.DateTime(0)
+  schedule_end  DateTime @db.DateTime(0)
+  user_id       Int?
+  user          user?    @relation("userToschedule", fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "schedule_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model ticket {
+  ticket_id  Int       @id @default(autoincrement())
+  open_date  DateTime  @db.DateTime(0)
+  close_date DateTime? @db.DateTime(0)
+  isResolved Boolean
+  message    message[]
+}
+
+model to_list {
+  favorite_id                          Int
+  owner_id                             Int
+  is_favorite                          Boolean
+  date_added                           DateTime? @db.DateTime(0)
+  company_companyToto_list_favorite_id company   @relation("companyToto_list_favorite_id", fields: [favorite_id], references: [company_id], onUpdate: Restrict, map: "to_list_ibfk_1")
+  company_companyToto_list_owner_id    company   @relation("companyToto_list_owner_id", fields: [owner_id], references: [company_id], onUpdate: Restrict, map: "to_list_ibfk_2")
+
+  @@id([favorite_id, owner_id])
+  @@index([owner_id], map: "owner_id")
+}
+
+model to_place {
+  cart_id    Int
+  product_id Int
+  quantity   Int
+  cart       cart    @relation(fields: [cart_id], references: [cart_id], onUpdate: Restrict, map: "to_place_ibfk_1")
+  product    product @relation(fields: [product_id], references: [product_id], onUpdate: Restrict, map: "to_place_ibfk_2")
+
+  @@id([cart_id, product_id])
+  @@index([product_id], map: "product_id")
+}
+
+model to_stock {
+  company_id Int
+  product_id Int
+  quantity   Int
+  company    company @relation(fields: [company_id], references: [company_id], onUpdate: Restrict, map: "to_stock_ibfk_1")
+  product    product @relation(fields: [product_id], references: [product_id], onUpdate: Restrict, map: "to_stock_ibfk_2")
+
+  @@id([company_id, product_id])
+  @@index([product_id], map: "product_id")
 }
