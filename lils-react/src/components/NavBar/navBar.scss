@@ -1,0 +1,30 @@
+@import "src/_variables";
+
+.navContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  place-items: center;
+  height: $nav-height;
+  padding: 10px 50px;
+  // z-index: 10;
+  @include theme() {
+    background-color: t("bg");
+    border-bottom: 1px solid t("hover");
+    box-shadow: t("link") 0px 0px 20px;
+
+    .themeSwitch {
+      input:checked + .mantine-Switch-track {
+        background-color: t("hover");
+      }
+    }
+  }
+
+  .navLogo {
+    width: 100px;
+    height: 100%;
+  }
+}

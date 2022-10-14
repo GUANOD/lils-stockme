@@ -1,0 +1,92 @@
+$dark-primary: #121212;
+$dark-font: #f7f7f7;
+$dark-secondary: #3a5874;
+$dark-accent: #5a7d9f;
+$dark-grey: #252525;
+
+$light-font: #212121;
+$light-primary: #f7f7f7;
+$light-secondary: #3a5874;
+$light-accent: #5a7d9f;
+$light-grey: #afafaf;
+
+$dark-accent-grey: #686868;
+$light-accent-grey: #7a7a7a;
+
+$nav-height: 75px;
+$sidebar-width: 300px;
+@mixin radius {
+  border-radius: 5px;
+}
+
+@mixin center-all {
+  display: grid;
+  place-items: center;
+}
+
+$themes: (
+  default-theme: (
+    // logo: url("../images/brand/logo_vertical.svg"),
+    bg: $light-primary,
+    card-bg: $light-grey,
+    text: $light-font,
+    link: $light-secondary,
+    hover: $light-accent,
+    dark-grey: $dark-accent-grey,
+    light-grey: $light-accent-grey,
+    sectionBtn: $dark-secondary // border: $border--light,,,,,,,,,,,,,,,,,,,,,
+  ),
+  dark-theme: (
+    // logo: url("../images/brand/logo_vertical--invert.svg"),
+    bg: $dark-primary,
+    card-bg: $dark-grey,
+    text: $dark-font,
+    link: $dark-secondary,
+    hover: $dark-accent,
+    dark-grey: $dark-accent-grey,
+    light-grey: $light-accent-grey,
+    sectionBtn: $dark-secondary// border: $border--dark,
+  ),
+);
+
+// @mixin themed() {
+//   @each $theme, $map in $themes {
+//     // .theme--#{$theme} & {
+//       $theme-map: () !global;
+//       @each $key, $submap in $map {
+//         $value: map-get(map-get($themes, $theme), "#{$key}");
+//         $theme-map: map-merge(
+//           $theme-map,
+//           (
+//             $key: $value,
+//           )
+//         ) !global;
+//       // }
+//       @content;
+//       $theme-map: null !global;
+//     }
+//   }
+// }
+
+@mixin theme() {
+  @each $theme, $map in $themes {
+    // $theme: darkTheme, lightTheme
+    // $map: ('text-color': ..., 'bg-color': ...)
+
+    // make the $map globally accessible, so that theme-get() can access it
+    $theme-map: $map !global;
+
+    // make a class for each theme using interpolation -> #{}
+    // use & for making the theme class ancestor of the class
+    // from which you use @include theme() {...}
+    .#{$theme} & {
+      @content; // the content inside @include theme() {...}
+    }
+  }
+  // no use of the variable $theme-map now
+  $theme-map: null !global;
+}
+
+@function t($key) {
+  @return map-get($theme-map, $key);
+}

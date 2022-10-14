@@ -1,11 +1,29 @@
 .authContainer {
+  // padding: 100px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
-  width: 90vw;
-  height: 70vh;
+  place-items: center;
 }
 
-.dividerContainer {
-  padding: 5vw;
+.divider {
+  margin: 0 50px;
+}
+
+.oAuth {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 10px;
+
+  button {
+    margin: 10px 0;
+  }
+}
+.title {
+  display: flex;
+  flex-flow: row nowrap;
+  h3 {
+    width: 50%;
+    text-align: center;
+  }
 }

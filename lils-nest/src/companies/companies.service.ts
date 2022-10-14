@@ -1,13 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
-import { CompanyDto, Company_type } from "./dto";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CompanyDto, Company_type } from './dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { isNumber } from 'class-validator';
 
 @Injectable()
 export class CompaniesService {
   constructor(private prismaService: PrismaService) {}
 
-  // CREATE
+  //////////////// CREATE /////////////////////////
 
   /**
    *
@@ -21,13 +22,13 @@ export class CompaniesService {
       return { message: `Company ${company.company_name} created` };
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code == "P2003") {
+        if (err.code == 'P2003') {
           // company type foreign key constraint fails
           throw new HttpException(
             "Company type doesn't exist",
             HttpStatus.BAD_REQUEST,
           );
-        } else if (err.code == "P2002") {
+        } else if (err.code == 'P2002') {
           // company already exists
           throw new HttpException(
             "Can't create this company",
@@ -36,7 +37,7 @@ export class CompaniesService {
         }
       }
       //if error is unknown
-      throw new HttpException("Server error", 500);
+      throw new HttpException('Server error', 500);
     }
   };
 
@@ -53,11 +54,11 @@ export class CompaniesService {
         message: `Company Type ${company_type.company_type_name} has been created`,
       };
     } catch (error) {
-      throw new HttpException("Server error", 500);
+      throw new HttpException('Server error', 500);
     }
   };
 
-  // READ
+  //////////////// READ /////////////////////////
 
   /**
    *
@@ -70,7 +71,7 @@ export class CompaniesService {
       const entreprises = await this.prismaService.company.findMany();
       return entreprises;
     } catch (err) {
-      throw new HttpException("Server error", 500);
+      throw new HttpException('Server error', 500);
     }
   };
 
@@ -80,7 +81,6 @@ export class CompaniesService {
    *
    * returns
    */
-
   getCompaniesByIds = async (ids: number[]) => {
     try {
       const entreprises = await this.prismaService.company.findMany({
@@ -89,7 +89,7 @@ export class CompaniesService {
 
       if (!entreprises.length) {
         throw new HttpException(
-          "No companies found in search",
+          'No companies found in search',
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -99,7 +99,37 @@ export class CompaniesService {
       if (err instanceof HttpException) {
         throw err;
       }
-      throw new HttpException("Server error", 500);
+      throw new HttpException('Server error', 500);
+    }
+  };
+
+  //////////////// UPDATE /////////////////////////
+
+  updateCompanyById = async (dto: CompanyDto) => {
+    try {
+      const entreprise = await this.prismaService.company.update({
+        where: { company_id: dto.company_id },
+        data: { ...dto },
+      });
+
+      if (!entreprise) {
+        throw new HttpException(
+          'No companies match the criteria!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return { res: 'Company successfully updated' };
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      if (err instanceof PrismaClientKnownRequestError) {
+        if (err.code === 'P2025') {
+          throw new HttpException('Bad request', 403);
+        }
+      }
+      throw new HttpException('Server error', 500);
     }
   };
 }

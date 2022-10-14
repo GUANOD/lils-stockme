@@ -3,12 +3,12 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-} from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
-import * as bcrypt from "bcrypt";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { SignInDto, SignUpDto } from "./dto";
-import { JwtService } from "@nestjs/jwt";
+} from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { SignInDto, SignUpDto } from './dto';
+import { JwtService } from '@nestjs/jwt';
 
 /**
  *
@@ -29,14 +29,14 @@ export class AuthService {
         user_username: data.user_username,
       },
     });
-    if (!user) throw new ForbiddenException("Invalid credentials!");
+    if (!user) throw new ForbiddenException('Invalid credentials!');
 
     const pwMatches = await bcrypt.compare(
       data.user_password,
       user.user_password,
     );
 
-    if (!pwMatches) throw new ForbiddenException("Invalid credentials!");
+    if (!pwMatches) throw new ForbiddenException('Invalid credentials!');
 
     return this.signToken(user.user_id, user.user_username, user.role_id);
   }
@@ -52,16 +52,16 @@ export class AuthService {
       data.user_password = hashed;
       const user = await this.prismaService.user.create({
         data,
-        select: { user_name: true },
+        select: { user_id: true, user_username: true, role_id: true },
       });
-      return user;
+      return this.signToken(user.user_id, user.user_username, user.role_id);
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code === "P2002") {
-          throw new ForbiddenException("User already exists");
+        if (err.code === 'P2002') {
+          throw new ForbiddenException('User already exists');
         }
       }
-      throw new HttpException("Bad request", HttpStatus.BAD_REQUEST);
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -77,7 +77,7 @@ export class AuthService {
     };
 
     const token = await this.jwt.signAsync(payload, {
-      // expiresIn: "1h",
+      expiresIn: '1h',
       secret: process.env.JWT_SECRET,
     });
 

@@ -1,0 +1,27 @@
+@import "src/_variables";
+
+.sideBarContainer {
+  position: absolute;
+  top: calc($nav-height - 1px);
+  bottom: 0;
+  left: 0;
+  width: $sidebar-width;
+  background-color: red;
+  @include theme() {
+    .mantine-Navbar-root {
+      padding: 20px 10px;
+      display: flex;
+      justify-content: space-between;
+      background-color: t("bg");
+      border-right: 1px solid t("hover");
+      box-shadow: t("link") 0px 20px 20px;
+      overflow-y: hidden;
+      height: calc(100vh - $nav-height + 1px);
+    }
+
+    .sideBarDivider {
+      padding-top: 20px;
+      border-top: 1px solid t("hover");
+    }
+  }
+}

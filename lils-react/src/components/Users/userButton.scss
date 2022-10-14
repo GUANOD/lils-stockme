@@ -1,0 +1,51 @@
+@import "src/_variables";
+.userButtonContainer {
+  display: flex;
+  place-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  @include theme() {
+    background-color: t("dark-grey");
+
+    &:hover {
+      background-color: t("light-grey");
+    }
+
+    .userButtonAvatar {
+      border-radius: 50%;
+      background-color: t("greys");
+      color: white;
+      padding: 5px;
+      width: 38px;
+      height: 38px;
+      margin: 0 10px 0 0;
+    }
+    .userButtonChev {
+      position: relative;
+      right: 0;
+      height: 16px;
+      width: 16px;
+      color: t("light");
+    }
+    .userButtonInfo {
+      max-width: 70%;
+
+      // margin: 0 10px;
+      p {
+        font-size: 0.8rem;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin: 0;
+        font-weight: bold;
+        color: white;
+      }
+      .userBtnEmail {
+        font-size: 0.7rem;
+        color: t("greys");
+      }
+    }
+  }
+}

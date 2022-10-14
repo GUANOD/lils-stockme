@@ -1,33 +1,15 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { company } from '@prisma/client';
+import { AdminGuard, JwtGuard } from 'src/auth/guard';
 import { CompaniesService } from './companies.service';
 import { CompanyDto, Company_ids, Company_type } from './dto';
 
 @Controller('companies')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtGuard)
 export class CompaniesController {
   constructor(private companiesService: CompaniesService) {}
 
-  /**
-   *
-   * @returns
-   *
-   */
-  @Get('allcompanies')
-  getAllCompanies() {
-    return this.companiesService.getAllCompanies();
-  }
-
-  /**
-   *
-   * @returns
-   *
-   */
-  @Post('companiesbyids')
-  getCompanyByIds(@Body() dto: Company_ids) {
-    return this.companiesService.getCompaniesByIds(dto.ids);
-  }
+  //////////////// CREATE /////////////////////////
 
   /**
    *
@@ -35,6 +17,7 @@ export class CompaniesController {
    *
    */
   @Post('create')
+  @UseGuards(AdminGuard)
   createCompany(@Body() dto: CompanyDto) {
     return this.companiesService.createCompany(dto);
   }
@@ -45,7 +28,40 @@ export class CompaniesController {
    *
    */
   @Post('createType')
+  @UseGuards(AdminGuard)
   createCompanyType(@Body() dto: Company_type) {
     return this.companiesService.createCompanyType(dto);
+  }
+
+  //////////////// READ /////////////////////////
+  /**
+   *
+   * @returns
+   *
+   */
+  @Get('allCompanies')
+  getAllCompanies() {
+    return this.companiesService.getAllCompanies();
+  }
+
+  /**
+   *
+   * @returns
+   *
+   */
+  @Post('companiesByIds')
+  getCompanyByIds(@Body() dto: Company_ids) {
+    return this.companiesService.getCompaniesByIds(dto.ids);
+  }
+
+  //////////////// UPDATE /////////////////////////
+  /**
+   *
+   * @returns
+   *
+   */
+  @Patch('updateCompanyById')
+  updateCompany(@Body() dto: CompanyDto) {
+    return this.companiesService.updateCompanyById(dto);
   }
 }

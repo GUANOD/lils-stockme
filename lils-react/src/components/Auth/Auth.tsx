@@ -1,23 +1,20 @@
 import { Divider, Group } from "@mantine/core";
-import React from "react";
-import CenterContent from "../CenterContent/CenterContent";
-import Form from "../Form/Form";
-import styles from "./Auth.module.scss";
+import React, { useState } from "react";
+import AuthForm from "../AuthForm/AuthForm";
+import LoginForm from "../AuthForm/LoginForm";
+import "./Auth.scss";
 import OAuth from "./OAuth";
 
 type Props = {};
 
 const Auth = (props: Props) => {
+  const [login, setLogin] = useState<boolean>(false);
   return (
-    <CenterContent width="100vw" height="100vh">
-      <div className={styles.authContainer}>
-        <Form />
-        <div className={styles.dividerContainer}>
-          <Divider size="sm" orientation="vertical" />
-        </div>
-        <OAuth />
-      </div>
-    </CenterContent>
+    <div className="authContainer">
+      {login ? <LoginForm /> : <AuthForm />}
+      <Divider className="divider" size="sm" orientation="vertical" />
+      <OAuth />
+    </div>
   );
 };
 
