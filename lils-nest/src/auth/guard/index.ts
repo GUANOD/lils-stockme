@@ -1,3 +1,2 @@
 export * from './jwt.guard';
-export * from './admin.guard';
-export * from './manager.guard';
+export * from './role.guard';

@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AdminGuard, JwtGuard, ManagerGuard } from 'src/auth/guard';
+import { JwtGuard, RoleGuard } from 'src/auth/guard';
 import { SignUpDto } from 'src/auth/dto';
 import { GetUser } from 'src/auth/decorator';
 import { User } from 'src/auth/entities/user.entity';
+import { Role, RoleRequired } from 'src/config/guardsConstants';
 
 @Controller('users')
 @UseGuards(JwtGuard)
@@ -21,14 +23,16 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('createUser')
-  @UseGuards(ManagerGuard)
+  @RoleRequired(Role.Manager)
+  @UseGuards(RoleGuard)
   // employees cant access this route
   create(@Body() dto: SignUpDto, @GetUser() user: User) {
     return this.usersService.create(dto, user);
   }
 
   @Get('all')
-  @UseGuards(AdminGuard)
+  @RoleRequired(Role.Manager)
+  @UseGuards(RoleGuard)
   findAll() {
     return this.usersService.findAll();
   }
@@ -44,7 +48,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Req() req, @Param('id') id: string, @GetUser() user: User) {
+    return this.usersService.remove(req, +id, user);
   }
 }

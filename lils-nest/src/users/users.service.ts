@@ -7,9 +7,14 @@ import {
 import { SignUpDto } from 'src/auth/dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import {
+  NotFoundError,
+  PrismaClientKnownRequestError,
+} from '@prisma/client/runtime';
 import { User } from 'src/auth/entities/user.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Request } from 'express';
+import { Role } from 'src/config/guardsConstants';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +22,8 @@ export class UsersService {
   async create(data: SignUpDto, user: User) {
     try {
       // if trying to create an admin or webmaster throw error
-      if (data.role_id < 3) throw new ForbiddenException('Unauthorized');
+      if (user.role > 2 && data.role_id < 3)
+        throw new ForbiddenException('Unauthorized');
 
       // check users company
       const company = await this.prismaService.user.findUnique({
@@ -26,7 +32,7 @@ export class UsersService {
       });
 
       // if trying to create user outside of company throw error
-      if (company.company_id !== data.company_id) {
+      if (!company || company.company_id !== data.company_id) {
         throw new ForbiddenException('Unauthorized');
       }
 
@@ -53,6 +59,7 @@ export class UsersService {
     try {
       // check users company
       const usersToSend = await this.prismaService.user.findMany({
+        where: { deleted: false },
         select: {
           user_id: true,
           user_name: true,
@@ -84,7 +91,6 @@ export class UsersService {
 
       return { res: usersToSend };
     } catch (err) {
-      console.log(err);
       throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
     }
   }
@@ -99,8 +105,8 @@ export class UsersService {
   async findMe(user: User) {
     try {
       // check users company
-      const userToSend = await this.prismaService.user.findUnique({
-        where: { user_id: user.sub },
+      const userToSend = await this.prismaService.user.findFirst({
+        where: { AND: { user_id: user.sub, deleted: false } },
         select: {
           user_id: true,
           user_name: true,
@@ -138,7 +144,49 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(req: Request, id: number, user: User) {
+    if (user.role > Role.Manager && user.sub != +req.params.id)
+      throw new ForbiddenException('Unauthorized');
+
+    try {
+      if (user.role == Role.Manager) {
+        const requesterProm = this.prismaService.user.findFirstOrThrow({
+          where: {
+            user_id: user.sub,
+            deleted: false,
+          },
+          select: {
+            company_id: true,
+          },
+        });
+        const subjectProm = this.prismaService.user.findFirstOrThrow({
+          where: {
+            user_id: id,
+          },
+          select: {
+            company_id: true,
+          },
+        });
+
+        const [requester, subject] = await Promise.all([
+          requesterProm,
+          subjectProm,
+        ]);
+        if (requester.company_id != subject.company_id)
+          throw new ForbiddenException('Unauthorized');
+      }
+
+      const deleteUser = await this.prismaService.user.update({
+        where: {
+          user_id: id,
+        },
+        data: {
+          deleted: true,
+        },
+      });
+      return { res: `User ${deleteUser.user_id} deleted!` };
+    } catch (err) {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
   }
 }

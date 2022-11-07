@@ -18,7 +18,7 @@ const NavBar = (props: Props) => {
         size="md"
         onLabel={<IconSun size={16} stroke={2.5} />}
         offLabel={<IconMoonStars size={16} stroke={2.5} />}
-        defaultChecked={theme?.theme === Theme.dark}
+        defaultChecked={theme?.theme === Theme.light}
         onChange={(e) =>
           theme?.setTheme(e.target.checked ? Theme.light : Theme.dark)
         }

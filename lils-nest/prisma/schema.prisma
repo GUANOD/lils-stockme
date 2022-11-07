@@ -10,8 +10,8 @@ datasource db {
 model cart {
   cart_id                         Int        @id @default(autoincrement())
   cart_price                      Decimal    @db.Decimal(19, 4)
-  cart_fullfilled                 Boolean
-  cart_delivered                  Boolean
+  cart_fullfilled                 Boolean    @default(false)
+  cart_delivered                  Boolean    @default(false)
   buyer_id                        Int?
   seller_id                       Int?
   company_cart_buyer_idTocompany  company?   @relation("cart_buyer_idTocompany", fields: [buyer_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "cart_ibfk_1")
@@ -87,6 +87,7 @@ model user {
   role               role       @relation("userTorole", fields: [role_id], references: [role_id], onUpdate: Restrict, map: "_user_ibfk_1")
   company            company    @relation("userTocompany", fields: [company_id], references: [company_id], onUpdate: Restrict, map: "_user_ibfk_2")
   schedule           schedule[] @relation("userToschedule")
+  deleted            Boolean    @default(false)
 
   @@index([company_id], map: "company_id")
   @@index([role_id], map: "role_id")
@@ -103,7 +104,7 @@ model message {
   company_companyTomessage_receiver_id company? @relation("companyTomessage_receiver_id", fields: [receiver_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "message_ibfk_1")
   company_companyTomessage_sender_id   company? @relation("companyTomessage_sender_id", fields: [sender_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "message_ibfk_2")
   ticket                               ticket   @relation(fields: [ticket_id], references: [ticket_id], onUpdate: Restrict, map: "message_ibfk_3")
-
+  deleted                               Boolean @default(false)
   @@index([receiver_id], map: "receiver_id")
   @@index([sender_id], map: "sender_id")
   @@index([ticket_id], map: "ticket_id")
@@ -115,7 +116,7 @@ model schedule {
   schedule_end  DateTime @db.DateTime(0)
   user_id       Int?
   user          user?    @relation("userToschedule", fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "schedule_ibfk_1")
-
+  deleted       Boolean  @default(false)
   @@index([user_id], map: "user_id")
 }
 
@@ -123,7 +124,8 @@ model ticket {
   ticket_id  Int       @id @default(autoincrement())
   open_date  DateTime  @db.DateTime(0)
   close_date DateTime? @db.DateTime(0)
-  isResolved Boolean
+  isResolved Boolean   @default(false)
+  deleted    Boolean   @default(false)
   message    message[]
 }
 

@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
+import { Public } from 'src/config/guardsConstants';
 import { AuthService } from './auth.service';
 import { SignInDto, SignUpDto } from './dto';
 
@@ -22,6 +23,7 @@ export class AuthController {
    *
    */
   @Post('signup')
+  @Public()
   async signup(@Body() dto: SignUpDto) {
     return this.authService.signUp(dto);
   }
@@ -32,6 +34,7 @@ export class AuthController {
    *
    */
   @Post('signin')
+  @Public()
   signin(@Body() dto: SignInDto) {
     return this.authService.signIn(dto);
   }

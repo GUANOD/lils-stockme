@@ -5,10 +5,22 @@ import { CompaniesModule } from './companies/companies.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { JwtGuard, RoleGuard } from './auth/guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [AuthModule, PrismaModule, CompaniesModule, UsersModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
+    },
+  ],
 })
 export class AppModule {}

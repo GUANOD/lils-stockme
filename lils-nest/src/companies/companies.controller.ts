@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { company } from '@prisma/client';
-import { AdminGuard, JwtGuard } from 'src/auth/guard';
+import { JwtGuard } from 'src/auth/guard';
+import { Public, Role, RoleRequired } from 'src/config/guardsConstants';
 import { CompaniesService } from './companies.service';
 import { CompanyDto, Company_ids, Company_type } from './dto';
 
@@ -17,7 +18,8 @@ export class CompaniesController {
    *
    */
   @Post('create')
-  @UseGuards(AdminGuard)
+  @Public()
+  // @RoleRequired(Role.Admin)
   createCompany(@Body() dto: CompanyDto) {
     return this.companiesService.createCompany(dto);
   }
@@ -28,7 +30,7 @@ export class CompaniesController {
    *
    */
   @Post('createType')
-  @UseGuards(AdminGuard)
+  @Public()
   createCompanyType(@Body() dto: Company_type) {
     return this.companiesService.createCompanyType(dto);
   }
@@ -61,6 +63,7 @@ export class CompaniesController {
    *
    */
   @Patch('updateCompanyById')
+  @RoleRequired(Role.Manager)
   updateCompany(@Body() dto: CompanyDto) {
     return this.companiesService.updateCompanyById(dto);
   }
