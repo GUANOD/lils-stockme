@@ -8,7 +8,7 @@ import { ReactComponent as Logo } from "../../../public/assets/svg/logo-no-backg
 import "./navBar.scss";
 type Props = {};
 
-const NavBar = (props: Props) => {
+export const NavBar = (props: Props) => {
   const theme = useContext(ThemeContext);
   return (
     <div className="navContainer">
@@ -26,5 +26,3 @@ const NavBar = (props: Props) => {
     </div>
   );
 };
-
-export default NavBar;

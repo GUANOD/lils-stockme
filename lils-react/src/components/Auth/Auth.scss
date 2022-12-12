@@ -1,11 +1,21 @@
 @import "src/_variables";
+.animationWrapper {
+  width: 90vw;
+}
+
+.authGrid {
+  display: grid;
+  place-items: center;
+  height: calc(100vh - $nav-height);
+}
+
 .authContainer {
   // padding: 100px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   place-items: center;
-  width: 90vw;
+  width: 100%;
 }
 
 .divider {

@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-} from "class-validator";
+} from 'class-validator';
 
 export class SignUpDto {
   @IsEmail()

@@ -8,12 +8,13 @@ import OAuth from "./OAuth";
 type Props = {};
 
 const Auth = (props: Props) => {
-  const [login, setLogin] = useState<boolean>(false);
   return (
-    <div className="authContainer">
-      {login ? <LoginForm /> : <AuthForm />}
-      <Divider className="divider" size="sm" orientation="vertical" />
-      <OAuth />
+    <div className="authGrid">
+      <div className="authContainer">
+        <AuthForm />
+        <Divider className="divider" size="sm" orientation="vertical" />
+        <OAuth />
+      </div>
     </div>
   );
 };

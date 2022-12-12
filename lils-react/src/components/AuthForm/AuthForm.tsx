@@ -9,7 +9,10 @@ import { DatePicker } from "@mantine/dates";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { IconAt } from "@tabler/icons";
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import { Theme, ThemeContext } from "../../context/ThemeContext";
+import { signIn } from "../../service/auth/auth.service";
 import "./AuthForm.scss";
 
 interface FormValues {
@@ -17,15 +20,16 @@ interface FormValues {
   username: string;
   firstname: string;
   lastname: string;
-  startdate: Date | null;
-  enddate: Date | null;
+  startdate: Date | undefined;
+  enddate: Date | undefined;
   endbool: boolean;
   password: string;
   passVerify: string;
 }
-
 const AuthForm = () => {
   const theme = useContext(ThemeContext);
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
   const [login, setLogin] = useState<boolean>(true);
 
   const signUpForm: UseFormReturnType<FormValues> = useForm<FormValues>({
@@ -34,8 +38,8 @@ const AuthForm = () => {
       username: "",
       firstname: "",
       lastname: "",
-      startdate: null,
-      enddate: null,
+      startdate: undefined,
+      enddate: undefined,
       endbool: false,
       password: "",
       passVerify: "",
@@ -54,7 +58,7 @@ const AuthForm = () => {
         value ? null : "Start date must not be empty",
       password: (value) =>
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-          value,
+          value
         )
           ? null
           : "Password must include at least one uppercase letter, one lowercase letter, one number and special character",
@@ -77,13 +81,35 @@ const AuthForm = () => {
     },
   });
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onSubmit = async (values: Partial<FormValues>) => {
+    if (login) {
+      const signinData: signInDto = {
+        user_username: values.username as string,
+        user_password: values.password as string,
+      };
+
+      try {
+        const token = await signIn(signinData);
+        auth?.setToken(token);
+        navigate("/dashboard");
+      } catch (error) {
+        console.error(error); //TODO: NOTIFICATIONS SYSTEM
+      }
+    } else {
+      // const signupData: signUpDto = {
+      //   user_username: values.username,
+      //   user_firstname: values.firstname,
+      //   user_lastname: values.lastname,
+      //   user_email: values.email,
+      //   user_password: values.password,
+      //   user_startContract: values.startdate as Date,
+      //   user_endContract: values.enddate,
+    }
   };
 
   const onEndboolChange = () => {
     if (!{ ...signUpForm.getInputProps("endbool") }.value) {
-      signUpForm.setFieldValue("enddate", null);
+      signUpForm.setFieldValue("enddate", undefined);
     }
   };
 

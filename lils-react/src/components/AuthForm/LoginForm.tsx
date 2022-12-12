@@ -2,36 +2,33 @@ import { TextInput, Button, Group, PasswordInput } from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { IconAt } from "@tabler/icons";
 import { useEffect } from "react";
+import { signIn } from "../../service/auth/auth.service";
 import "./AuthForm.scss";
 
-interface FormValues {
-  // email: string;
-  username: string;
-  password: string;
-}
-
 const LoginForm = () => {
-  const form: UseFormReturnType<FormValues> = useForm<FormValues>({
+  const form: UseFormReturnType<signInDto> = useForm<signInDto>({
     initialValues: {
       // email: "",
-      username: "",
+      user_username: "",
 
-      password: "",
+      user_password: "",
     },
 
     validate: {
       // email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-      password: (value) =>
+      user_password: (value) =>
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-          value,
+          value
         )
           ? null
           : "Password must include at least one uppercase letter, one lowercase letter, one number and special character",
     },
   });
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onSubmit = (values: signInDto) => {
+    signIn(values).then((data) => {
+      console.log(data);
+    });
   };
 
   const onEndboolChange = () => {
