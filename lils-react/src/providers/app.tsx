@@ -1,13 +1,20 @@
 import { Button } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { BrowserRouter as Router } from "react-router-dom";
+import { NavBar } from "../components/NavBar/NavBar";
 import { Spinner } from "../components/Spinner/Spinner";
 import { AuthProvider } from "../context/AuthContext";
+import { ErrorProvider } from "../context/ErrorContext";
 import { ThemeProvider } from "../context/ThemeContext";
 
 type AppProviderProps = {
   children: React.ReactNode;
+};
+type ErrorFallbackProps = {
+  error: Error;
+  resetErrorBoundary: Function;
 };
 
 function AppProvider({ children }: AppProviderProps) {
@@ -29,11 +36,15 @@ function AppProvider({ children }: AppProviderProps) {
     //       <Spinner size="xl" />
     //     </div>
     //   }
-    // >
+    // > */}
+
     <ThemeProvider>
-      <AuthProvider>
-        <Router>{children}</Router>
-      </AuthProvider>
+      <ErrorProvider>
+        <AuthProvider>
+          <Router>{children}</Router>
+        </AuthProvider>
+      </ErrorProvider>
+
       {/* <div className="App">
           <NavBar />
           <div

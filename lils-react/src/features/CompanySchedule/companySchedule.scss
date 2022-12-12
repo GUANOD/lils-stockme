@@ -1,0 +1,43 @@
+@import "src/_variables";
+
+.companySchedule {
+  display: grid;
+  place-items: center;
+
+  .mantine-Calendar-calendarBase {
+    max-width: 100%;
+  }
+}
+.mantine-Calendar-cell {
+  border: 2px solid $dark-accent;
+  background-color: $dark-secondary;
+}
+.mantine-Calendar-day {
+  height: 100px;
+  width: 130px;
+}
+
+.EmployeeDailyBarGroup {
+  position: absolute;
+  max-height: 100%;
+  overflow-y: auto;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 50000;
+  padding: 20px 0;
+
+  .EmployeeDailyBar {
+    width: 95%;
+    margin-bottom: 1px;
+    line-height: 1rem;
+    border-radius: 5px;
+    padding: 0;
+    background-color: red;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

@@ -1,12 +1,15 @@
 import { Suspense } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-
-// import { Spinner } from "@/components/Elements";
-// import { MainLayout } from "@/components/Layout";
-// import { lazyImport } from "@/utils/lazyImport";
-import Dashboard from "../features/Dashboard/Dashboard";
-import { Spinner } from "../components/Spinner/Spinner";
+import Loader from "../components/Loader/Loader";
+import { sections } from "../features/Dashboard/sections";
+import { Section } from "../types";
 import { lazyImport } from "../utils";
+// import { NavBar } from "../components/NavBar/NavBar";
+
+const { Dashboard } = lazyImport(
+  () => import("../features/Dashboard/Dashboard"),
+  "Dashboard"
+);
 
 // const { DiscussionsRoutes } = lazyImport(
 //   () => import("@/features/discussions"),
@@ -18,24 +21,38 @@ import { lazyImport } from "../utils";
 
 const App = () => {
   return (
-    // <MainLayout>
-    // <Suspense fallback={<Spinner />}>
-    <Outlet />
-    // </Suspense>
-    // </MainLayout>
+    <>
+      {/* // <MainLayout> */}
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
+      {/* // </MainLayout> */}
+    </>
   );
 };
 
-export const protectedRoutes = [
-  {
-    path: "/dashboard",
-    element: <App />,
-    children: [
-      { path: "", element: <Dashboard /> },
-      // { path: '/users', element: <Users /> },
-      // { path: '/profile', element: <Profile /> },
-      // { path: '/', element: <Dashboard /> },
-      // { path: '*', element: <Navigate to="." /> },
-    ],
-  },
-];
+const calcAllowedRoutes = () => {
+  let allowedSections: Section[] = sections();
+  let allowedRoutes = allowedSections.map((sec) => {
+    return {
+      path: sec.path,
+      element: <Dashboard preSelection={sec} />,
+    };
+  });
+
+  return allowedRoutes;
+};
+
+export const protectedRoutes = () => {
+  return [
+    {
+      path: "/dashboard",
+      element: <App />,
+      children: calcAllowedRoutes(),
+    },
+    {
+      path: "/auth",
+      element: <Navigate to="/dashboard" />,
+    },
+  ];
+};

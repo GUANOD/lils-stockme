@@ -1,0 +1,12 @@
+@import "src/_variables";
+
+.loaderContainer {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+  @include theme() {
+    // background-color: t("bg");
+  }
+}

@@ -1,30 +1,14 @@
 import { Button, Navbar } from "@mantine/core";
-import {
-  IconBuildingStore,
-  IconBuildingWarehouse,
-  IconCalendar,
-  IconCalendarTime,
-  IconDatabase,
-  IconHome,
-  IconUsers,
-} from "@tabler/icons";
-import { useState } from "react";
 import { Section } from "../../types";
 import UserButton from "../Users/UserButton";
 import "./sideBar.scss";
-type Props = {};
+type Props = {
+  selected: Section;
+  sections: Section[];
+  setSelected: React.Dispatch<React.SetStateAction<Section>>;
+};
 
-export const sections: Section[] = [
-  { name: "Home", icon: <IconHome /> },
-  { name: "My schedule", icon: <IconCalendar /> },
-  { name: "Company schedule", icon: <IconCalendarTime /> },
-  { name: "Employees", icon: <IconUsers /> },
-  { name: "Stock", icon: <IconBuildingWarehouse /> },
-  { name: "Stores", icon: <IconBuildingStore /> },
-];
-
-const SideBar = (props: Props) => {
-  const [selected, setSelected] = useState<Section>(sections[1]);
+const SideBar = ({ selected, sections, setSelected }: Props) => {
   return (
     <div className="sideBarContainer">
       <Navbar>

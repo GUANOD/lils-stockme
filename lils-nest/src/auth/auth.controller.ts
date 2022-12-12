@@ -12,9 +12,9 @@ export class AuthController {
    * @returns
    *
    */
-  @Post('google')
+  @Get('google')
   authGoogle() {
-    return 'hi';
+    return { hi: 'hi' };
   }
 
   /**

@@ -69,7 +69,7 @@ export class AuthService {
     userId: number,
     username: string,
     role: number,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; role: number }> {
     const payload = {
       sub: userId,
       username,
@@ -81,6 +81,6 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
     });
 
-    return { access_token: token };
+    return { access_token: token, role };
   }
 }

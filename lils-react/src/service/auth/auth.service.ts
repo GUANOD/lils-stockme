@@ -12,8 +12,8 @@ export const signIn = async (signInDto: signInDto): Promise<string | any> => {
     })
       .then((data) => data.json())
       .then((data) => {
-        if (data.access_token) {
-          resolve(data.access_token);
+        if (data.access_token && data.role) {
+          resolve({ accessToken: data.access_token, role: data.role });
         } else {
           throw data;
         }

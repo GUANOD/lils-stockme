@@ -1,7 +1,9 @@
 import { Button, MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Theme, ThemeContext } from "../../context/ThemeContext";
+import { NavBar } from "../NavBar/NavBar";
 import "./themeContainer.scss";
 
 type ThemeContainerProps = {
@@ -12,9 +14,7 @@ const ErrorFallback = () => {
   return (
     <div className="errorFallback" role="alert">
       <div>
-        <h2 className="text-lg font-semibold">
-          Ooops, something went wrong :({" "}
-        </h2>
+        <h2 className="text-lg font-semibold">Ooops, something went wrong</h2>
         <Button
           className="btnPrimary"
           onClick={() => window.location.assign(window.location.origin)}
@@ -26,7 +26,7 @@ const ErrorFallback = () => {
   );
 };
 
-function ThemeContainer({ children }: ThemeContainerProps) {
+export const ThemeContainer = ({ children }: ThemeContainerProps) => {
   const theme = useContext(ThemeContext);
 
   return (
@@ -35,11 +35,16 @@ function ThemeContainer({ children }: ThemeContainerProps) {
     >
       <div className={theme?.theme}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="themeContainer">{children}</div>
+          <div className="themeContainer">
+            <NotificationsProvider>
+              <NavBar />
+              {children}
+            </NotificationsProvider>
+          </div>
         </ErrorBoundary>
       </div>
     </MantineProvider>
   );
-}
+};
 
 export default ThemeContainer;

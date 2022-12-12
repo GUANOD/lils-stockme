@@ -1,12 +1,10 @@
 @import "src/_variables";
 
 .sideBarContainer {
-  position: absolute;
-  top: calc($nav-height - 1px);
-  bottom: 0;
-  left: 0;
   width: $sidebar-width;
+  height: 100%;
   background-color: red;
+
   @include theme() {
     .mantine-Navbar-root {
       padding: 20px 10px;
@@ -16,7 +14,7 @@
       border-right: 1px solid t("hover");
       box-shadow: t("link") 0px 20px 20px;
       overflow-y: hidden;
-      height: calc(100vh - $nav-height + 1px);
+      height: calc(100vh - $nav-height);
     }
 
     .sideBarDivider {

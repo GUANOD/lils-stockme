@@ -7,10 +7,11 @@ import {
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, UseFormReturnType } from "@mantine/form";
-import { IconAt } from "@tabler/icons";
+import { IconAt, IconKeyOff, IconLockAccessOff } from "@tabler/icons";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { ErrorContext } from "../../context/ErrorContext";
 import { Theme, ThemeContext } from "../../context/ThemeContext";
 import { signIn } from "../../service/auth/auth.service";
 import "./AuthForm.scss";
@@ -29,6 +30,7 @@ interface FormValues {
 const AuthForm = () => {
   const theme = useContext(ThemeContext);
   const auth = useContext(AuthContext);
+  const errorContext = useContext(ErrorContext);
   const navigate = useNavigate();
   const [login, setLogin] = useState<boolean>(true);
 
@@ -90,10 +92,16 @@ const AuthForm = () => {
 
       try {
         const token = await signIn(signinData);
-        auth?.setToken(token);
+        auth?.setToken(token.accessToken);
+        auth?.setRole(token.role);
+        errorContext?.resetError();
         navigate("/dashboard");
       } catch (error) {
-        console.error(error); //TODO: NOTIFICATIONS SYSTEM
+        let errorDto: errorDto = error as errorDto;
+        errorContext?.setError({
+          message: errorDto.message,
+          icon: <IconLockAccessOff />,
+        });
       }
     } else {
       // const signupData: signUpDto = {

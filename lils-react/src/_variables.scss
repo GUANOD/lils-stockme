@@ -1,6 +1,7 @@
 $dark-primary: #121212;
 $dark-font: #f7f7f7;
 $dark-secondary: #3a5874;
+$secondary-transparent: rgba(59, 88, 115, 0.8);
 $dark-accent: #5a7d9f;
 $dark-grey: #252525;
 
@@ -34,7 +35,10 @@ $themes: (
     hover: $light-accent,
     dark-grey: $dark-accent-grey,
     light-grey: $light-accent-grey,
-    sectionBtn: $dark-secondary // border: $border--light,,,,,,,,,,,,,,,,,,,,,
+    sec-transparent: $secondary-transparent,
+    // border: $border--light,,,,,,,,,,,,,,,,,,,,,
+    sectionBtn: $dark-secondary
+      // border: $border--light,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
   ),
   dark-theme: (
     // logo: url("../images/brand/logo_vertical--invert.svg"),
@@ -45,6 +49,7 @@ $themes: (
     hover: $dark-accent,
     dark-grey: $dark-accent-grey,
     light-grey: $light-accent-grey,
+    sec-transparent: $secondary-transparent,
     sectionBtn: $dark-secondary// border: $border--dark,
   ),
 );

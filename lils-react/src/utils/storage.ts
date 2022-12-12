@@ -14,6 +14,17 @@ const storage = {
   clearToken: () => {
     window.localStorage.removeItem(`${storagePrefix}token`);
   },
+  getRole: () => {
+    return Number(
+      JSON.parse(window.localStorage.getItem(`${storagePrefix}role`) as string)
+    );
+  },
+  setRole: (token: number) => {
+    window.localStorage.setItem(`${storagePrefix}role`, JSON.stringify(token));
+  },
+  clearRole: () => {
+    window.localStorage.removeItem(`${storagePrefix}role`);
+  },
   getTheme: () => {
     return JSON.parse(
       window.localStorage.getItem(`${storagePrefix}theme`) as string
