@@ -1,4 +1,4 @@
-export class User {
+export class Token {
   sub: number;
   username: string;
   role: number;

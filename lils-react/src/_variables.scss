@@ -30,6 +30,7 @@ $themes: (
     // logo: url("../images/brand/logo_vertical.svg"),
     bg: $light-primary,
     card-bg: $light-grey,
+    title: $light-accent,
     text: $light-font,
     link: $light-secondary,
     hover: $light-accent,
@@ -38,12 +39,13 @@ $themes: (
     sec-transparent: $secondary-transparent,
     // border: $border--light,,,,,,,,,,,,,,,,,,,,,
     sectionBtn: $dark-secondary
-      // border: $border--light,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+      // border: $border--light,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
   ),
   dark-theme: (
     // logo: url("../images/brand/logo_vertical--invert.svg"),
     bg: $dark-primary,
     card-bg: $dark-grey,
+    title: $dark-accent,
     text: $dark-font,
     link: $dark-secondary,
     hover: $dark-accent,

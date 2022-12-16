@@ -15,12 +15,12 @@ import { APP_GUARD } from '@nestjs/core';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: RoleGuard,
-    },
-    {
-      provide: APP_GUARD,
       useClass: JwtGuard,
     },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RoleGuard,
+    // },
   ],
 })
 export class AppModule {}

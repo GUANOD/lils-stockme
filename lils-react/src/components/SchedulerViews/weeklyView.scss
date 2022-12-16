@@ -1,0 +1,69 @@
+@import "src/_variables";
+
+.weeklyView {
+  height: 100%;
+  width: 100%;
+  padding: 30px 0;
+
+  .navBtnGroup {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .dailyScheduleTag {
+    @include theme() {
+      border-radius: 5px;
+      // border: 2px solid t("link");
+      color: $dark-primary;
+      font-weight: bold;
+      margin: 2px 0;
+      opacity: 0.5;
+
+      cursor: pointer;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  table {
+    width: 100%;
+    min-width: 500px;
+
+    @include theme() {
+      color: t("text");
+    }
+
+    tbody {
+      tr {
+        height: 50px;
+      }
+      th,
+      td {
+        border: 2px solid $light-accent;
+        border-collapse: collapse;
+        cursor: pointer;
+        &:hover {
+          background-color: $dark-secondary;
+        }
+        // height: 50px;
+        // min-height: 100px;
+      }
+
+      th {
+        color: $dark-primary;
+      }
+
+      td {
+        font-size: 0.7rem;
+      }
+    }
+
+    th,
+    td,
+    tr {
+      width: calc(100% / 8);
+      text-align: center;
+    }
+  }
+}

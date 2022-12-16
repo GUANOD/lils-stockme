@@ -31,24 +31,38 @@ const App = () => {
   );
 };
 
-const calcAllowedRoutes = () => {
-  let allowedSections: Section[] = sections();
+const calcAllowedRoutes = (
+  auth: {
+    token: string | null;
+    role: number | null;
+    setToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setRole: React.Dispatch<React.SetStateAction<number | null>>;
+  } | null
+) => {
+  let allowedSections: Section[] = sections(auth);
+
   let allowedRoutes = allowedSections.map((sec) => {
     return {
       path: sec.path,
       element: <Dashboard preSelection={sec} />,
     };
   });
-
   return allowedRoutes;
 };
 
-export const protectedRoutes = () => {
+export const protectedRoutes = (
+  auth: {
+    token: string | null;
+    role: number | null;
+    setToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setRole: React.Dispatch<React.SetStateAction<number | null>>;
+  } | null
+) => {
   return [
     {
       path: "/dashboard",
       element: <App />,
-      children: calcAllowedRoutes(),
+      children: calcAllowedRoutes(auth),
     },
     {
       path: "/auth",

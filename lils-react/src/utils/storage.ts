@@ -36,6 +36,20 @@ const storage = {
   clearTheme: () => {
     window.localStorage.removeItem(`${storagePrefix}theme`);
   },
+  getColor: () => {
+    return JSON.parse(
+      window.localStorage.getItem(`${storagePrefix}userColors`) as string
+    );
+  },
+  setColor: (colors: any) => {
+    window.localStorage.setItem(
+      `${storagePrefix}userColors`,
+      JSON.stringify(colors)
+    );
+  },
+  clearColors: () => {
+    window.localStorage.removeItem(`${storagePrefix}userColors`);
+  },
 };
 
 export default storage;

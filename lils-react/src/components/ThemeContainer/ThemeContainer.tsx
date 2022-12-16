@@ -17,7 +17,7 @@ const ErrorFallback = () => {
         <h2 className="text-lg font-semibold">Ooops, something went wrong</h2>
         <Button
           className="btnPrimary"
-          onClick={() => window.location.assign(window.location.origin)}
+          onClick={() => window.location.assign(window.location.href)}
         >
           Refresh
         </Button>

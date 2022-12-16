@@ -1,227 +1,99 @@
-import { Styles } from "@mantine/core";
+import { Radio, Styles } from "@mantine/core";
 import { Calendar, CalendarBaseStylesNames } from "@mantine/dates";
-import { PropsWithChildren, Suspense } from "react";
-import { Schedule, Section } from "../../types";
+import { IconLicenseOff } from "@tabler/icons";
+import {
+  PropsWithChildren,
+  Suspense,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { MonthlyView } from "../../components/SchedulerViews/MonthlyView";
+import { WeeklyView } from "../../components/SchedulerViews/weeklyView";
+import { AuthContext } from "../../context/AuthContext";
+import { ErrorContext } from "../../context/ErrorContext";
+import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
+import { getEmployeesSchedule } from "../../service/schedules/schedule.service";
+import { Schedule, Section, User } from "../../types";
 import { genRandomHSL } from "../../utils";
 import "./companySchedule.scss";
 // import Loader from "../Loader/Loader";
 
 // const { AppRoutes } = lazyImport(() => import("./routes"), "AppRoutes");
 
-interface Props {
-  // selected: Section;
-}
+type CompanyScheduleProps = {};
 
-type EmployeeDailyBarProps = {
-  schedule: Schedule;
-};
+export const CompanySchedule = ({}: CompanyScheduleProps) => {
+  const [view, setView] = useState<string>("monthlyView");
+  const [schedules, setSchedules] = useState<User[]>([]);
+  const [dates, setDates] = useState<Date[]>([]);
+  const errorContext = useContext(ErrorContext);
 
-let schedules: Schedule[] = [
-  {
-    id: 20,
-    start: new Date("december 12 2022, 08:00"),
-    end: new Date("december 12 2022, 15:00"),
-    user: {
-      user_id: 1,
-      user_email: "fafa",
-      user_name: "john",
-      user_startContract: new Date(),
-      user_username: "fam",
-      color: genRandomHSL(),
-      role_id: 2,
-      company: {
-        company_id: 21,
-        company_address: "",
-        company_name: "name",
-        company_reference: "sdfa",
-        company_type_id: 1,
-      },
-    },
-  },
-  {
-    id: 22,
-    start: new Date("december 12 2022, 09:00"),
-    end: new Date("december 12 2022, 11:00"),
-    user: {
-      user_id: 2,
-      user_email: "fafa",
-      user_name: "fif",
-      color: genRandomHSL(),
-      user_startContract: new Date(),
-      user_username: "fam",
-      role_id: 2,
-      company: {
-        company_id: 21,
-        company_address: "",
-        company_name: "name",
-        company_reference: "sdfa",
-        company_type_id: 1,
-      },
-    },
-  },
-  {
-    id: 22,
-    start: new Date("december 12 2022, 09:00"),
-    end: new Date("december 12 2022, 11:00"),
-    user: {
-      user_id: 2,
-      user_email: "fafa",
-      user_name: "fif",
-      color: genRandomHSL(),
-      user_startContract: new Date(),
-      user_username: "fam",
-      role_id: 2,
-      company: {
-        company_id: 21,
-        company_address: "",
-        company_name: "name",
-        company_reference: "sdfa",
-        company_type_id: 1,
-      },
-    },
-  },
-  {
-    id: 22,
-    start: new Date("december 12 2022, 09:00"),
-    end: new Date("december 12 2022, 11:00"),
-    user: {
-      user_id: 2,
-      user_email: "fafa",
-      user_name: "fif",
-      color: genRandomHSL(),
-      user_startContract: new Date(),
-      user_username: "fam",
-      role_id: 2,
-      company: {
-        company_id: 21,
-        company_address: "",
-        company_name: "name",
-        company_reference: "sdfa",
-        company_type_id: 1,
-      },
-    },
-  },
-  {
-    id: 22,
-    start: new Date("december 12 2022, 09:00"),
-    end: new Date("december 12 2022, 11:00"),
-    user: {
-      user_id: 2,
-      user_email: "fafa",
-      user_name: "fif",
-      color: genRandomHSL(),
-      user_startContract: new Date(),
-      user_username: "fam",
-      role_id: 2,
-      company: {
-        company_id: 21,
-        company_address: "",
-        company_name: "name",
-        company_reference: "sdfa",
-        company_type_id: 1,
-      },
-    },
-  },
-  {
-    id: 22,
-    start: new Date("december 12 2022, 09:00"),
-    end: new Date("december 12 2022, 11:00"),
-    user: {
-      user_id: 2,
-      user_email: "fafa",
-      user_name: "fif",
-      user_startContract: new Date(),
-      user_username: "fam",
-      role_id: 2,
-      color: genRandomHSL(),
-      company: {
-        company_id: 21,
-        company_address: "",
-        company_name: "name",
-        company_reference: "sdfa",
-        company_type_id: 1,
-      },
-    },
-  },
-];
-
-export const EmployeeDailyBar = ({ schedule }: EmployeeDailyBarProps) => {
-  const handleScheduleClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    schedule: Schedule
-  ) => {
-    if ((e.target as Element).className == "EmployeeDailyBar") {
-      alert(schedule.start);
-    }
-  };
-
-  return (
-    <div
-      style={
-        schedule.user.color ? { backgroundColor: schedule.user.color } : {}
-      }
-      className="EmployeeDailyBar"
-      onClick={(e) => handleScheduleClick(e, schedule)}
-    >
-      {schedule.user.user_name}
-    </div>
+  let { data, loading, error } = useAuthenticatedFetch(
+    getEmployeesSchedule,
+    [dates],
+    false,
+    { dates }
   );
-};
-
-// const calendarStyles: Styles<CalendarBaseStylesNames, Record<string, any>> = {
-//   cell: {
-//     border: "1px solid red",
-//   },
-//   day: { borderRadius: 0, height: 130, width: 150 },
-// };
-
-export const CompanySchedule = (props: Props) => {
-  /**
-   * Handles the render of each daily column taking the schedules in account
-   * @param dayStart
-   * @returns
-   */
-  const scheduleRenderer = (dayStart: Date) => {
-    let dayEnd = new Date(dayStart);
-    let day = dayStart.getDate();
-    dayEnd = new Date(dayEnd.setHours(23, 59, 59, 999));
-
-    let thisDaySchedule = schedules.filter((sched) => {
-      return sched.start > dayStart && sched.end < dayEnd;
-    });
-
-    return (
-      <div className="dayCell" onClick={(e) => handleDayClick(e, dayStart)}>
-        {day}
-        <div className="EmployeeDailyBarGroup">
-          {thisDaySchedule.map((sched) => {
-            return <EmployeeDailyBar schedule={sched} />;
-          })}
-        </div>
-      </div>
-    );
-  };
 
   /**
-   * handles day cell click
-   * @param e
-   * @param dayStart
+   * HANDLE RETURN FROM AUTHFETCH
+   **/
+  useEffect(() => {
+    if (data) {
+      setSchedules(data);
+    }
+  }, [data]);
+
+  /**
+   * HANDLE ERROR FROM AUTHFETCH
    */
-  const handleDayClick = (e: React.MouseEvent<HTMLElement>, dayStart: Date) => {
-    if (
-      (e.target as Element).className == "dayCell" ||
-      (e.target as Element).className == "EmployeeDailyBarGroup"
-    ) {
-      alert("clicky");
+  useEffect(() => {
+    if (error) {
+      errorContext?.setError({ message: error, icon: <IconLicenseOff /> });
+    }
+  }, [error]);
+
+  const renderView = () => {
+    switch (view) {
+      case "monthlyView":
+        return (
+          <MonthlyView
+            defaultDate={dates[0] || new Date()}
+            schedules={schedules}
+            setParentDates={setDates}
+            loading={loading}
+          ></MonthlyView>
+        );
+      case "weeklyView":
+        return (
+          <WeeklyView
+            schedules={schedules}
+            setParentDates={setDates}
+            defaultDate={dates[0] || new Date()}
+            loading={loading}
+          />
+        );
     }
   };
 
   return (
     <div className="companySchedule">
-      <Calendar
-        // styles={calendarStyles}
-        renderDay={scheduleRenderer}
-      ></Calendar>
+      <div className="radioChoice">
+        <Radio.Group
+          name="favoriteFramework"
+          label="Select your preferred View"
+          value={view}
+          onChange={setView}
+          // description="This is anonymous"
+          // withAsterisk
+        >
+          <Radio value="monthlyView" label="Monthly view" />
+          <Radio value="weeklyView" label="Weekly View" />
+        </Radio.Group>
+      </div>
+
+      {renderView()}
     </div>
   );
 };

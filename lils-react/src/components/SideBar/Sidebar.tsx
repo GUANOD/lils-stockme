@@ -5,7 +5,7 @@ import "./sideBar.scss";
 type Props = {
   selected: Section;
   sections: Section[];
-  setSelected: React.Dispatch<React.SetStateAction<Section>>;
+  setSelected: (section: Section) => void;
 };
 
 const SideBar = ({ selected, sections, setSelected }: Props) => {

@@ -11,28 +11,30 @@ import {
   NotFoundError,
   PrismaClientKnownRequestError,
 } from '@prisma/client/runtime';
-import { User } from 'src/auth/entities/user.entity';
+import { Token } from 'src/auth/entities/user.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
 import { Role } from 'src/config/guardsConstants';
+import type { schedule, user } from '@prisma/client';
+import { CompanyScheduleDto } from './dto/companyScheduleDto';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
-  async create(data: SignUpDto, user: User) {
+  async create(data: SignUpDto, user: user) {
     try {
       // if trying to create an admin or webmaster throw error
-      if (user.role > 2 && data.role_id < 3)
+      if (user.role_id > 2 && data.role_id < 3)
         throw new ForbiddenException('Unauthorized');
 
       // check users company
-      const company = await this.prismaService.user.findUnique({
-        where: { user_id: user.sub },
-        select: { company_id: true },
-      });
+      // const company = await this.prismaService.user.findUnique({
+      //   where: { user_id: user.company_id },
+      //   select: { company_id: true },
+      // });
 
       // if trying to create user outside of company throw error
-      if (!company || company.company_id !== data.company_id) {
+      if (!user.company_id || user.company_id !== data.company_id) {
         throw new ForbiddenException('Unauthorized');
       }
 
@@ -55,11 +57,18 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async findAll(user?: user, companyScheduleDto?: CompanyScheduleDto) {
+    // console.log('babhabh', companyScheduleDto);
+    let dates = companyScheduleDto.dates;
     try {
       // check users company
+      let condition = user
+        ? { deleted: false, company: { company_id: user.company_id } }
+        : { deleted: false };
+
+      // if(company)
       const usersToSend = await this.prismaService.user.findMany({
-        where: { deleted: false },
+        where: condition,
         select: {
           user_id: true,
           user_name: true,
@@ -79,7 +88,19 @@ export class UsersService {
               },
             },
           },
-          schedule: true,
+          schedule: dates
+            ? {
+                where: {
+                  scheule_start: { gte: dates[0] },
+                  schedule_end: { lte: dates[1] },
+                },
+                select: {
+                  schedule_end: true,
+                  scheule_start: true,
+                  schedule_id: true,
+                },
+              }
+            : false,
           _count: true,
         },
       });
@@ -102,64 +123,64 @@ export class UsersService {
    * @returns User
    */
 
-  async findMe(user: User) {
-    try {
-      // check users company
-      const userToSend = await this.prismaService.user.findFirst({
-        where: { AND: { user_id: user.sub, deleted: false } },
-        select: {
-          user_id: true,
-          user_name: true,
-          user_username: true,
-          user_email: true,
-          user_startContract: true,
-          user_endContract: true,
-          role: true,
-          company: {
-            select: {
-              company_name: true,
-              company_id: true,
-              company_type: {
-                select: { company_type_name: true, company_type_id: true },
-              },
-            },
-          },
-          schedule: true,
-          _count: true,
-        },
-      });
+  // async findMe(user: User) {
+  //   try {
+  //     // check users company
+  //     const userToSend = await this.prismaService.user.findFirst({
+  //       where: { AND: { user_id: user.sub, deleted: false } },
+  //       select: {
+  //         user_id: true,
+  //         user_name: true,
+  //         user_username: true,
+  //         user_email: true,
+  //         user_startContract: true,
+  //         user_endContract: true,
+  //         role: true,
+  //         company: {
+  //           select: {
+  //             company_name: true,
+  //             company_id: true,
+  //             company_type: {
+  //               select: { company_type_name: true, company_type_id: true },
+  //             },
+  //           },
+  //         },
+  //         schedule: true,
+  //         _count: true,
+  //       },
+  //     });
 
-      if (!userToSend) {
-        throw new ForbiddenException('Bad request');
-      }
+  //     if (!userToSend) {
+  //       throw new ForbiddenException('Bad request');
+  //     }
 
-      return { res: userToSend };
-    } catch (err) {
-      if (err instanceof ForbiddenException) throw err;
-      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
-    }
-  }
+  //     return { res: userToSend };
+  //   } catch (err) {
+  //     if (err instanceof ForbiddenException) throw err;
+  //     throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+  //   }
+  // }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  async remove(req: Request, id: number, user: User) {
-    if (user.role > Role.Manager && user.sub != +req.params.id)
+  async remove(req: Request, id: number, user: user) {
+    if (user.role_id > Role.Manager && user.user_id != +req.params.id)
       throw new ForbiddenException('Unauthorized');
 
     try {
-      if (user.role == Role.Manager) {
-        const requesterProm = this.prismaService.user.findFirstOrThrow({
-          where: {
-            user_id: user.sub,
-            deleted: false,
-          },
-          select: {
-            company_id: true,
-          },
-        });
-        const subjectProm = this.prismaService.user.findFirstOrThrow({
+      if (user.role_id == Role.Manager) {
+        // const requesterProm = this.prismaService.user.findFirstOrThrow({
+        //   where: {
+        //     user_id: user.,
+        //     deleted: false,
+        //   },
+        //   select: {
+        //     company_id: true,
+        //   },
+        // });
+        const subject = await this.prismaService.user.findFirstOrThrow({
           where: {
             user_id: id,
           },
@@ -168,11 +189,12 @@ export class UsersService {
           },
         });
 
-        const [requester, subject] = await Promise.all([
-          requesterProm,
-          subjectProm,
-        ]);
-        if (requester.company_id != subject.company_id)
+        // const [requester, subject] = await Promise.all([
+        //   requesterProm,
+        //   subjectProm,
+        // ]);
+
+        if (user.company_id != subject.company_id)
           throw new ForbiddenException('Unauthorized');
       }
 

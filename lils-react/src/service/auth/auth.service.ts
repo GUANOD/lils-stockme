@@ -1,3 +1,4 @@
+import storage from "../../utils/storage";
 import { authRoutes } from "./routes";
 
 export const signIn = async (signInDto: signInDto): Promise<string | any> => {
@@ -10,12 +11,16 @@ export const signIn = async (signInDto: signInDto): Promise<string | any> => {
       },
       body: JSON.stringify(signInDto),
     })
-      .then((data) => data.json())
       .then((data) => {
-        if (data.access_token && data.role) {
-          resolve({ accessToken: data.access_token, role: data.role });
+        console.log(data.ok);
+        if (!data.ok) throw data;
+        return data.json();
+      })
+      .then((res) => {
+        if (res.access_token && res.role) {
+          resolve({ accessToken: res.access_token, role: res.role });
         } else {
-          throw data;
+          throw res;
         }
       })
       .catch((err) => {
@@ -24,3 +29,26 @@ export const signIn = async (signInDto: signInDto): Promise<string | any> => {
   });
 };
 export const signUp = () => {};
+
+export const validateAuthToken = (token: string) => {
+  return new Promise((resolve, reject) => {
+    fetch(authRoutes.validateToken, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((data) => {
+        if (!data.ok) throw data;
+        return data.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};

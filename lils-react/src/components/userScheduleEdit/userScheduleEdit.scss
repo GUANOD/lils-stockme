@@ -1,0 +1,25 @@
+@import "src/_variables";
+
+// .userScheduleEdit {
+.mantine-Modal-header {
+  @include theme() {
+    color: t("text");
+    font-weight: bold;
+    font-size: 1.5rem;
+
+    span {
+      color: t("title");
+    }
+  }
+}
+
+.userScheduleEditBody {
+  & > * {
+    margin-bottom: 10px;
+  }
+  // .badgesContainer {
+
+  // }
+}
+
+// }

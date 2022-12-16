@@ -1,8 +1,7 @@
 import { User } from ".";
 
 export type Schedule = {
-  id: number;
-  start: Date;
-  end: Date;
-  user: User;
+  schedule_end: Date;
+  scheule_start: Date;
+  schedule_id?: number;
 };

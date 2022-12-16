@@ -78,10 +78,16 @@ export const selectionDisplay = (selected: Section): ReactNode => {
  *
  * @returns the sections the user is allowed to see
  */
-export const sections = (): Section[] => {
+export const sections = (
+  auth: {
+    token: string | null;
+    role: number | null;
+    setToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setRole: React.Dispatch<React.SetStateAction<number | null>>;
+  } | null
+): Section[] => {
   let allowedSections = defaultSections.filter((sec) => {
-    return roleGuard(sec.role);
+    return roleGuard(auth, sec.role);
   });
-
   return allowedSections;
 };

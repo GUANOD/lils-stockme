@@ -1,4 +1,4 @@
-import { Company, Roles } from ".";
+import { Company, Role, Roles, Schedule } from ".";
 
 export type User = {
   user_id: number;
@@ -7,7 +7,9 @@ export type User = {
   user_email: string;
   user_startContract: Date;
   user_endContract?: Date | null;
-  role_id: Roles;
+  role: Role;
+  company_id: number;
   company: Company;
   color?: string;
+  schedule?: Schedule[];
 };

@@ -100,12 +100,12 @@ code {
 .btnSecondary {
   transition: background, color 0.2s ease;
   @include theme() {
-    background-color: t("card-bg");
+    background-color: t("bg");
     border-color: t("hover");
     color: t("hover");
     &:hover {
-      background-color: t("link");
-      color: t("text") !important;
+      background-color: t("hover");
+      color: $dark-font !important;
     }
   }
 }
@@ -163,4 +163,20 @@ h3 {
   width: 100vw;
   height: 100px;
   min-height: calc(100vh - $nav-height);
+}
+
+.badgePrimary {
+  background-color: $dark-secondary;
+  .mantine-Badge-inner {
+    color: $dark-font;
+  }
+
+  margin-right: 5px;
+}
+
+.mantine-Modal-header {
+  // @include theme() {
+  //   color: t(text);
+  // }
+  // font-size: 50px;
 }

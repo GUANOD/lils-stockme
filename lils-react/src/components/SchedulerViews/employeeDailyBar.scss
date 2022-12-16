@@ -1,0 +1,45 @@
+@import "src/_variables";
+
+.EmployeeDailyBarGroup {
+  position: absolute;
+  max-height: 100%;
+  overflow-y: auto;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 50000;
+  padding: 20px 0;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    box-shadow: -1px 0px 5px black;
+  }
+
+  .EmployeeDailyBar {
+    width: 95%;
+    margin-bottom: 1px;
+    line-height: 1rem;
+    border-radius: 5px;
+    padding: 0 10px;
+    background-color: $light-primary;
+    opacity: 0.5;
+    color: $dark-primary;
+    font-size: 0.6rem;
+
+    span {
+      font-weight: bold;
+      text-align: left;
+      font-size: 0.7rem;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

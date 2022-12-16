@@ -28,7 +28,7 @@ export const AppRoutes = () => {
     {
       path: "/",
       element: <CommonElements />,
-      children: auth?.token ? protectedRoutes() : publicRoutes,
+      children: auth?.token ? protectedRoutes(auth) : publicRoutes,
     },
     { path: "*", element: <Navigate to="" /> },
   ];
